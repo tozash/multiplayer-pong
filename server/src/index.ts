@@ -1,7 +1,8 @@
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { queuePlayer } from './rooms';
+import { queuePlayer, removeSocket, getRoomAndRole } from './rooms';
+import { createGame, getGame, applyPaddleMove, removeGame } from './game';
 
 const app = express();
 const httpServer = createServer(app);
@@ -30,10 +31,24 @@ io.on('connection', (socket) => {
     if (left && right) {
       io.to(left).emit('room_ready', { roomId, role: 'left' });
       io.to(right).emit('room_ready', { roomId, role: 'right' });
+      createGame(roomId);
     }
   }
+
+  socket.on('paddle_move', (payload: { dir: 'up' | 'down'; roomId: string }) => {
+    const info = getRoomAndRole(socket.id);
+    if (!info) return;
+    const game = getGame(info.roomId);
+    if (!game) return;
+    applyPaddleMove(game, info.role, payload.dir);
+    io.to(info.roomId).emit('state_tick', game);
+  });
   socket.on('disconnect', () => {
-    socket.emit('disconnect');
+    const info = getRoomAndRole(socket.id);
+    if (info) {
+      removeGame(info.roomId);
+    }
+    removeSocket(socket.id);
     console.log('Client disconnected:', socket.id);
   });
 });
