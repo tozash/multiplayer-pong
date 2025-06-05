@@ -1,6 +1,6 @@
-// GPT: server/test/rooms.spec.ts
-import { describe, it, expect, beforeEach } from 'vitest';
+// GPT: server/src/rooms.ts
 import type { Role } from '../../shared/types.js';
+
 // In-memory state
 const queue: string[] = [];
 const rooms: Record<string, { left: string; right: string }> = {};
@@ -13,7 +13,7 @@ function generateRoomId() {
 function queuePlayer(socketId: string) {
   if (queue.length === 0) {
     queue.push(socketId);
-    return { status: 'waiting' };
+    return { status: 'waiting' } as const;
   } else {
     const left = queue.shift()!;
     const right = socketId;
@@ -21,7 +21,7 @@ function queuePlayer(socketId: string) {
     rooms[roomId] = { left, right };
     socketToRoom[left] = roomId;
     socketToRoom[right] = roomId;
-    return { status: 'paired', roomId, left, right };
+    return { status: 'paired', roomId, left, right } as const;
   }
 }
 
@@ -57,32 +57,4 @@ function __testReset() {
   Object.keys(socketToRoom).forEach(key => delete socketToRoom[key]);
 }
 
-describe('rooms.ts pure logic', () => {
-  beforeEach(() => {
-    __testReset();          // wipe in-memory state before each test
-  });
-
-  it('first call to queuePlayer returns waiting', () => {
-    const res = queuePlayer('A');
-    expect(res).toEqual({ status: 'waiting' });
-  });
-
-  it('second call returns paired with correct ids and roomId', () => {
-    queuePlayer('A');
-    const res = queuePlayer('B');
-    expect(res.status).toBe('paired');
-    expect(res.left).toBe('A');
-    expect(res.right).toBe('B');
-    expect(typeof res.roomId).toBe('string');
-  });
-
-  it('removeSocket resets state so next is waiting', () => {
-    queuePlayer('A');
-    queuePlayer('B');       // paired now
-    removeSocket('A');
-    const res = queuePlayer('C');
-    expect(res).toEqual({ status: 'waiting' });
-  });
-});
 export { queuePlayer, removeSocket, getRoomAndRole, __testReset };
-
