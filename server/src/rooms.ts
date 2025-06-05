@@ -1,6 +1,7 @@
-// GPT: server/src/rooms.ts
-import type { Role } from '../../shared/types.js';
 
+// GPT: server/test/rooms.spec.ts
+import { describe, it, expect, beforeEach } from 'vitest';
+import type { Role } from '../../shared/types.js';
 // In-memory state
 const queue: string[] = [];
 const rooms: Record<string, { left: string; right: string }> = {};
@@ -58,3 +59,4 @@ function __testReset() {
 }
 
 export { queuePlayer, removeSocket, getRoomAndRole, __testReset };
+
