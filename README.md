@@ -17,7 +17,13 @@ pnpm install
 
 ## Running the game locally
 
-Start the Socket.IO server and the React development server in separate terminals:
+Start both the Socket.IO server and React development server with:
+
+```bash
+pnpm dev    # runs both on http://localhost:4000 and http://localhost:5173
+```
+
+You can also start them separately:
 
 ```bash
 pnpm dev:server    # runs the server on http://localhost:4000
