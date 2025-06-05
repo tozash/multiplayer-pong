@@ -2,7 +2,14 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { queuePlayer, removeSocket, getRoomAndRole } from './rooms';
-import { createGame, getGame, applyPaddleMove, removeGame } from './game';
+import {
+  createGame,
+  getGame,
+  getAllGames,
+  applyPaddleMove,
+  removeGame,
+  stepGame,
+} from './game';
 
 const app = express();
 const httpServer = createServer(app);
@@ -52,6 +59,13 @@ io.on('connection', (socket) => {
     console.log('Client disconnected:', socket.id);
   });
 });
+
+setInterval(() => {
+  for (const [roomId, game] of getAllGames()) {
+    stepGame(game);
+    io.to(roomId).emit('state_tick', game);
+  }
+}, 50);
 
 const PORT = 4000;
 httpServer.listen(PORT, () => {

@@ -15,6 +15,12 @@ export interface PaddleMovePayload {
 export interface GameState {
   leftPaddleY: number;
   rightPaddleY: number;
+  ballX: number;
+  ballY: number;
+  ballVX: number;
+  ballVY: number;
+  leftScore: number;
+  rightScore: number;
 }
 
 export interface ServerToClientEvents {

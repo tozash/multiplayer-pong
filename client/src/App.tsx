@@ -14,7 +14,16 @@ type Screen =
 
 function App() {
   const [screen, setScreen] = useState<Screen>({ status: 'disconnected' });
-  const [paddles, setPaddles] = useState<GameState>({ leftPaddleY: 0, rightPaddleY: 0 });
+  const [game, setGame] = useState<GameState>({
+    leftPaddleY: 0,
+    rightPaddleY: 0,
+    ballX: 0,
+    ballY: 0,
+    ballVX: 0,
+    ballVY: 0,
+    leftScore: 0,
+    rightScore: 0,
+  });
 
   useEffect(() => {
     socket.on('handshake', (data) => {
@@ -28,7 +37,7 @@ function App() {
       setScreen({ status: 'room_ready', role: data.role, roomId: data.roomId });
     });
     socket.on('state_tick', (state: GameState) => {
-      setPaddles(state);
+      setGame(state);
     });
     return () => {
       socket.off('handshake');
@@ -64,8 +73,10 @@ function App() {
     content = (
       <div>
         <div>Game starting — you're {screen.role}</div>
-        <div>Left: {paddles.leftPaddleY}</div>
-        <div>Right: {paddles.rightPaddleY}</div>
+        <div>Left: {game.leftPaddleY}</div>
+        <div>Right: {game.rightPaddleY}</div>
+        <div>Ball: {game.ballX}, {game.ballY}</div>
+        <div>Score: {game.leftScore} - {game.rightScore}</div>
       </div>
     );
   }
