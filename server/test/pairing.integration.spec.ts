@@ -1,11 +1,16 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { io as Client } from 'socket.io-client';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import express from 'express';
 import { getFreePort } from './utils/getFreePort';
+import { queuePlayer, removeSocket, __testReset } from '../src/rooms';
 
 describe('Socket.IO pairing integration', () => {
+  beforeEach(() => {
+    __testReset();
+  });
+
   it('pairs two clients and emits room_ready with correct roles', async () => {
     const port = await getFreePort();
     const app = express();
@@ -13,43 +18,6 @@ describe('Socket.IO pairing integration', () => {
     const io = new Server(httpServer, {
       cors: { origin: '*', methods: ['GET', 'POST'] },
     });
-    // Inline rooms logic for isolation
-    const queue: string[] = [];
-    const rooms: Record<string, { left: string; right: string }> = {};
-    const socketToRoom: Record<string, string> = {};
-    function generateRoomId() {
-      return Math.random().toString(36).slice(2, 10);
-    }
-    function queuePlayer(socketId: string) {
-      if (queue.length === 0) {
-        queue.push(socketId);
-        return { status: 'waiting' };
-      } else {
-        const left = queue.shift()!;
-        const right = socketId;
-        const roomId = generateRoomId();
-        rooms[roomId] = { left, right };
-        socketToRoom[left] = roomId;
-        socketToRoom[right] = roomId;
-        return { status: 'paired', roomId, left, right };
-      }
-    }
-    function removeSocket(socketId: string) {
-      const idx = queue.indexOf(socketId);
-      if (idx !== -1) queue.splice(idx, 1);
-      const roomId = socketToRoom[socketId];
-      if (roomId) {
-        const room = rooms[roomId];
-        if (room) {
-          if (room.left === socketId || room.right === socketId) {
-            delete rooms[roomId];
-            if (room.left) delete socketToRoom[room.left];
-            if (room.right) delete socketToRoom[room.right];
-          }
-        }
-      }
-      delete socketToRoom[socketId];
-    }
     io.on('connection', (socket) => {
       const result = queuePlayer(socket.id);
       if (result.status === 'waiting') {
