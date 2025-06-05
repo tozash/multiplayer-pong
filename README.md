@@ -26,6 +26,12 @@ pnpm dev:client    # runs the client on http://localhost:5173
 
 ## Playing
 
+1. Open `http://localhost:5173` in **two** browser windows or share the URL with a friend on the same network.
+2. The first window will display `Waiting for opponent…` until the second joins.
+3. Once paired, each client shows `Game starting — you're LEFT/RIGHT` along with the current paddle positions.
+4. Press the `ArrowUp` and `ArrowDown` keys to move your paddle. Movements are sent to the server and broadcast so both players stay in sync.
+   (Ball physics are still a work in progress, so you'll only see the paddles move.)
+=======
 1. Open `http://localhost:5173` in **two** browser windows or tabs.
 2. The first window will display `Waiting for opponent…` until the second window connects.
 3. Once paired, both clients show `Game starting — you're LEFT/RIGHT` and the current paddle positions.
