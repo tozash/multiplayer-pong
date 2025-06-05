@@ -1,5 +1,6 @@
 // GPT: server/test/rooms.spec.ts
 import { describe, it, expect, beforeEach } from 'vitest';
+import type { Role } from '../../shared/types.js';
 // In-memory state
 const queue: string[] = [];
 const rooms: Record<string, { left: string; right: string }> = {};
@@ -41,6 +42,15 @@ function removeSocket(socketId: string) {
   delete socketToRoom[socketId];
 }
 
+function getRoomAndRole(socketId: string): { roomId: string; role: Role } | null {
+  const roomId = socketToRoom[socketId];
+  if (!roomId) return null;
+  const room = rooms[roomId];
+  if (!room) return null;
+  const role: Role = room.left === socketId ? 'left' : 'right';
+  return { roomId, role };
+}
+
 function __testReset() {
   queue.length = 0;
   Object.keys(rooms).forEach(key => delete rooms[key]);
@@ -74,5 +84,5 @@ describe('rooms.ts pure logic', () => {
     expect(res).toEqual({ status: 'waiting' });
   });
 });
-export { queuePlayer, removeSocket, __testReset };
+export { queuePlayer, removeSocket, getRoomAndRole, __testReset };
 
