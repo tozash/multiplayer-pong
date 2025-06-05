@@ -3,10 +3,14 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { queuePlayer, removeSocket, getRoomAndRole } from './rooms';
 import { createGame, getGame, applyPaddleMove, removeGame } from './game';
+import type {
+  ClientToServerEvents,
+  ServerToClientEvents,
+} from '../../shared/types.js';
 
 const app = express();
 const httpServer = createServer(app);
-const io = new Server(httpServer, {
+const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
   cors: {
     origin: 'http://localhost:5173',
     methods: ['GET', 'POST'],
@@ -35,7 +39,7 @@ io.on('connection', (socket) => {
     }
   }
 
-  socket.on('paddle_move', (payload: { dir: 'up' | 'down'; roomId: string }) => {
+  socket.on('paddle_move', (payload) => {
     const info = getRoomAndRole(socket.id);
     if (!info) return;
     const game = getGame(info.roomId);
