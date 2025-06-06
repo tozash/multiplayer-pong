@@ -1,8 +1,8 @@
 // GPT: server/src/game.ts
 import type { GameState, Role, PaddleDirection } from '../../shared/types.js';
 
-const GAME_HEIGHT = 400;
-const GAME_WIDTH = 600;
+export const GAME_HEIGHT = 400;
+export const GAME_WIDTH = 600;
 const PADDLE_HEIGHT = 80;
 const PADDLE_OFFSET = 20;
 const BALL_RADIUS = 5;
