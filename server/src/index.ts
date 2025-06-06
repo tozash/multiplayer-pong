@@ -42,9 +42,12 @@ io.on('connection', (socket) => {
     // Notify both clients
     const { roomId, left, right } = result;
     if (left && right) {
+      io.sockets.sockets.get(left)?.join(roomId);
+      io.sockets.sockets.get(right)?.join(roomId);
       io.to(left).emit('room_ready', { roomId, role: 'left' });
       io.to(right).emit('room_ready', { roomId, role: 'right' });
-      createGame(roomId);
+      const game = createGame(roomId);
+      io.to(roomId).emit('state_tick', game);
     }
   }
 
