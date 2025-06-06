@@ -21,6 +21,12 @@ export interface GameState {
   ballVY: number;
   leftScore: number;
   rightScore: number;
+  ballX: number;
+  ballY: number;
+  ballVX: number;
+  ballVY: number;
+  leftScore: number;
+  rightScore: number;
 }
 
 export interface ServerToClientEvents {

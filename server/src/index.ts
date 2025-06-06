@@ -10,8 +10,9 @@ import type {
 =======
 import {
   createGame,
-  getGame,
-  getAllGames,
+      createGame(roomId, (state) => {
+        io.to(roomId).emit('state_tick', state);
+      });
   applyPaddleMove,
   removeGame,
   stepGame,

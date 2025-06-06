@@ -24,6 +24,17 @@ function App() {
     leftScore: 0,
     rightScore: 0,
   });
+      setGame(state);
+        <div>Left: {game.leftPaddleY}</div>
+        <div>Right: {game.rightPaddleY}</div>
+        <div>Ball: {game.ballX}, {game.ballY}</div>
+        <div>Score: {game.leftScore} - {game.rightScore}</div>
+    ballY: 0,
+    ballVX: 0,
+    ballVY: 0,
+    leftScore: 0,
+    rightScore: 0,
+  });
 
   useEffect(() => {
     socket.on('handshake', (data) => {

@@ -1,8 +1,56 @@
 // GPT: server/src/game.ts
 import type { GameState, Role, PaddleDirection } from '../../shared/types.js';
 
-export const GAME_WIDTH = 600;
-export const GAME_HEIGHT = 400;
+const loops: Record<string, NodeJS.Timeout> = {};
+
+function resetBall(state: GameState) {
+  state.ballX = 0;
+  state.ballY = 0;
+  state.ballVX = Math.random() > 0.5 ? 2 : -2;
+  state.ballVY = 2;
+}
+
+export function createGame(
+  roomId: string,
+  onTick: (state: GameState) => void,
+): GameState {
+  const state: GameState = {
+    leftPaddleY: 0,
+    rightPaddleY: 0,
+    ballX: 0,
+    ballY: 0,
+    ballVX: 2,
+    ballVY: 2,
+    leftScore: 0,
+    rightScore: 0,
+  };
+  loops[roomId] = setInterval(() => {
+    tick(state);
+    onTick(state);
+  }, 50);
+  if (loops[roomId]) {
+    clearInterval(loops[roomId]);
+    delete loops[roomId];
+  }
+
+function tick(state: GameState) {
+  state.ballX += state.ballVX;
+  state.ballY += state.ballVY;
+
+  if (state.ballY <= -100 || state.ballY >= 100) {
+    state.ballVY *= -1;
+  }
+
+  if (state.ballX <= -120) {
+    state.rightScore += 1;
+    resetBall(state);
+  } else if (state.ballX >= 120) {
+    state.leftScore += 1;
+    resetBall(state);
+  }
+}
+
+export { tick };
 const PADDLE_HEIGHT = 80;
 const PADDLE_OFFSET = 20;
 const BALL_RADIUS = 5;
