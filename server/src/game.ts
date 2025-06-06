@@ -6,8 +6,9 @@ export const GAME_WIDTH = 600;
 const PADDLE_HEIGHT = 80;
 const PADDLE_OFFSET = 20;
 const BALL_RADIUS = 5;
-const INITIAL_BALL_SPEED_X = 3;
-const INITIAL_BALL_SPEED_Y = 2;
+const PADDLE_WIDTH = 10;
+const INITIAL_BALL_SPEED_X = 5;
+const INITIAL_BALL_SPEED_Y = 3;
 
 const games: Record<string, GameState> = {};
 
@@ -75,22 +76,26 @@ export function stepGame(state: GameState): GameState {
     state.ballVY *= -1;
   }
 
-  const leftPaddleX = -GAME_WIDTH / 2 + PADDLE_OFFSET;
-  const rightPaddleX = GAME_WIDTH / 2 - PADDLE_OFFSET;
+  const leftPaddleRightX = -GAME_WIDTH / 2 + PADDLE_OFFSET + PADDLE_WIDTH;
+  const rightPaddleLeftX = GAME_WIDTH / 2 - PADDLE_OFFSET - PADDLE_WIDTH;
 
   if (
-    state.ballX - BALL_RADIUS <= leftPaddleX &&
-    state.ballX - BALL_RADIUS >= leftPaddleX - Math.abs(state.ballVX) &&
+    state.ballX - BALL_RADIUS <= leftPaddleRightX &&
+    state.ballVX < 0 &&
+    state.ballX >= -GAME_WIDTH / 2 &&
     Math.abs(state.ballY - state.leftPaddleY) <= PADDLE_HEIGHT / 2
   ) {
+    state.ballX = leftPaddleRightX + BALL_RADIUS;
     state.ballVX = Math.abs(state.ballVX);
   }
 
   if (
-    state.ballX + BALL_RADIUS >= rightPaddleX &&
-    state.ballX + BALL_RADIUS <= rightPaddleX + Math.abs(state.ballVX) &&
+    state.ballX + BALL_RADIUS >= rightPaddleLeftX &&
+    state.ballVX > 0 &&
+    state.ballX <= GAME_WIDTH / 2 &&
     Math.abs(state.ballY - state.rightPaddleY) <= PADDLE_HEIGHT / 2
   ) {
+    state.ballX = rightPaddleLeftX - BALL_RADIUS;
     state.ballVX = -Math.abs(state.ballVX);
   }
 
