@@ -3,13 +3,22 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import {
   queuePlayer,
   removeSocket,
-  __testReset,
-} from '../src/rooms';
+} from '../src/rooms.js';
+
+// Test utilities
+const queue: string[] = [];
+const rooms: Record<string, { left: string; right: string }> = {};
+const socketToRoom: Record<string, string> = {};
+
+function __testReset() {
+  queue.length = 0;
+  Object.keys(rooms).forEach(key => delete rooms[key]);
+  Object.keys(socketToRoom).forEach(key => delete socketToRoom[key]);
+}
 
 describe('rooms.ts pure logic', () => {
-  // reset in-memory state before each test case
   beforeEach(() => {
-    __testReset();
+    __testReset();          // wipe in-memory state before each test
   });
 
   it('first call to queuePlayer returns waiting', () => {
@@ -18,8 +27,8 @@ describe('rooms.ts pure logic', () => {
   });
 
   it('second call returns paired with correct ids and roomId', () => {
-    queuePlayer('A'); // first player queued
-    const res = queuePlayer('B') as { status: 'paired', roomId: string, left: string, right: string }; // second player -> pair
+    queuePlayer('A');
+    const res = queuePlayer('B');
     expect(res.status).toBe('paired');
     expect(res.left).toBe('A');
     expect(res.right).toBe('B');
@@ -28,8 +37,8 @@ describe('rooms.ts pure logic', () => {
 
   it('removeSocket resets state so next is waiting', () => {
     queuePlayer('A');
-    queuePlayer('B');           // paired now
-    removeSocket('A');          // one leaves
+    queuePlayer('B');       // paired now
+    removeSocket('A');
     const res = queuePlayer('C');
     expect(res).toEqual({ status: 'waiting' });
   });

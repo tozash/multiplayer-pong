@@ -7,15 +7,14 @@ import type {
   ClientToServerEvents,
   ServerToClientEvents,
 } from '../../shared/types.js';
-=======
+
 import {
   createGame,
-      createGame(roomId, (state) => {
-        io.to(roomId).emit('state_tick', state);
-      });
   applyPaddleMove,
   removeGame,
   stepGame,
+  getGame,
+  getAllGames,
 } from './game';
 
 const app = express();
