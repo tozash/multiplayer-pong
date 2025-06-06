@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { io as ClientIO } from 'socket.io-client';
 import type { GameState } from '../../shared/types';
+import GameCanvas from './GameCanvas';
 
 const socket = ClientIO('http://localhost:4000');
 
@@ -73,10 +74,10 @@ function App() {
     content = (
       <div>
         <div>Game starting — you're {screen.role}</div>
-        <div>Left: {game.leftPaddleY}</div>
-        <div>Right: {game.rightPaddleY}</div>
-        <div>Ball: {game.ballX}, {game.ballY}</div>
-        <div>Score: {game.leftScore} - {game.rightScore}</div>
+        <GameCanvas state={game} />
+        <div style={{ marginTop: '1rem' }}>
+          Score: {game.leftScore} - {game.rightScore}
+        </div>
       </div>
     );
   }
