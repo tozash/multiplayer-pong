@@ -70,6 +70,7 @@ setInterval(() => {
   for (const [roomId, game] of getAllGames()) {
     stepGame(game);
     io.to(roomId).emit('state_tick', game);
+    console.log('Emitting state_tick for', roomId, game);
   }
 }, 50);
 
