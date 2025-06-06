@@ -3,18 +3,8 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import {
   queuePlayer,
   removeSocket,
-} from '../src/rooms.js';
-
-// Test utilities
-const queue: string[] = [];
-const rooms: Record<string, { left: string; right: string }> = {};
-const socketToRoom: Record<string, string> = {};
-
-function __testReset() {
-  queue.length = 0;
-  Object.keys(rooms).forEach(key => delete rooms[key]);
-  Object.keys(socketToRoom).forEach(key => delete socketToRoom[key]);
-}
+  __testReset,
+} from '../src/rooms';
 
 describe('rooms.ts pure logic', () => {
   beforeEach(() => {

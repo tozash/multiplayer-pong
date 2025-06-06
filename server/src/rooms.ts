@@ -50,5 +50,12 @@ function getRoomAndRole(socketId: string): { roomId: string; role: Role } | null
   return { roomId, role };
 }
 
-export { queuePlayer, removeSocket, getRoomAndRole };
+// Helper used in tests to reset all in-memory state
+function __testReset(): void {
+  queue.length = 0;
+  Object.keys(rooms).forEach((k) => delete rooms[k]);
+  Object.keys(socketToRoom).forEach((k) => delete socketToRoom[k]);
+}
+
+export { queuePlayer, removeSocket, getRoomAndRole, __testReset };
 
